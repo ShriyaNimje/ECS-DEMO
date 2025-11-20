@@ -1,0 +1,41 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.8
+
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 104419566744.dkr.ecr.eu-west-1.amazonaws.com
+      - export REPOSITORY_URI=104419566744.dkr.ecr.eu-west-1.amazonaws.com/python-demo-ecr
+      - export IMAGE_TAG=latest
+
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Building Python package...
+      - python setup.py build
+      - echo Building Docker image...
+      - docker build -t $REPOSITORY_URI:latest .
+
+      - echo Tagging image...
+      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
+
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Pushing to ECR...
+      - docker push $REPOSITORY_URI:latest
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
+
+      - echo Writing imagedefinitions.json...
+      - export DOCKER_CONTAINER_NAME=python-demo-ecr
+      - printf '[{"name":"%s","imageUri":"%s"}]' "$DOCKER_CONTAINER_NAME" "$REPOSITORY_URI:$IMAGE_TAG" > imagedefinitions.json
+      - cat imagedefinitions.json
+
+artifacts:
+  files:
+    - imagedefinitions.json
+  

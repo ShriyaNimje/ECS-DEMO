@@ -1,0 +1,13 @@
+from flask import Flask
+
+# Create the Flask app
+app = Flask(__name__)
+
+# Define a route (homepage)
+@app.route('/')
+def home():
+    return "ECS implemented successfully 🚀"
+
+# Run the app
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=True)
