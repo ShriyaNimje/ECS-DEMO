@@ -6,7 +6,7 @@ app = Flask(__name__)
 # Define a route (homepage)
 @app.route('/')
 def home():
-    return "ECS implemented successfully 🚀"
+    return "ECS + CICD pipeline demo implemented successfully 🚀"
 
 # Run the app
 if __name__ == '__main__':
